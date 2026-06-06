@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Novel Chapter Exporter</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <section class="panel">
+      <div class="mast">
+        <div>
+          <p class="eyebrow">NovelBuddy tools</p>
+          <h1>Chapter exporter</h1>
+        </div>
+        <div class="status" id="status">Ready</div>
+      </div>
+
+      <div class="tabs" role="tablist">
+        <button class="tab active" id="scrapeTab" type="button">Scrape</button>
+        <button class="tab" id="combineTab" type="button">Combine TXT</button>
+        <button class="tab" id="ttsTab" type="button">🔊 Read Aloud</button>
+      </div>
+
+      <section id="scrapeView">
+        <form id="scrapeForm" class="grid">
+          <label>
+            Novel slug
+            <input id="novelSlug" required placeholder="">
+          </label>
+          <label>
+            Book title
+            <input id="novelTitle" placeholder="">
+          </label>
+          <label>
+            First chapter slug
+            <input id="firstSlug" value="chapter-1">
+          </label>
+          <label>
+            Start saving from chapter
+            <input id="startSaveChapter" type="number" min="1" value="1">
+          </label>
+          <label>
+            Export format
+            <select id="scrapeFormat">
+              <option value="txt">TXT</option>
+              <option value="docx">DOCX</option>
+              <option value="pdf">PDF</option>
+            </select>
+          </label>
+          <button class="primary" id="startScrape" type="submit">Start 100-chapter batch</button>
+          <button id="downloadAll" type="button">Download all chapters</button>
+          <button id="useResume" type="button" disabled>Use saved next batch</button>
+          <button id="continueScrape" type="button" disabled>Download next 100</button>
+          <button id="exportScrape" type="button" disabled>Export collected chapters</button>
+        </form>
+
+        <div class="meter">
+          <span id="scrapeCount">0 chapters collected</span>
+          <span id="nextSlug">Next: none</span>
+        </div>
+        <div class="resume" id="resumeInfo">No saved next batch</div>
+        <pre id="log" class="log"></pre>
+      </section>
+
+      <section id="combineView" hidden>
+        <form id="combineForm" class="grid">
+          <label class="wide">
+            Chapter TXT files
+            <input id="txtFiles" type="file" accept=".txt" multiple>
+          </label>
+          <label>
+            Book title
+            <input id="combineTitle" placeholder="Optional">
+          </label>
+          <label>
+            Start chapter
+            <input id="startChapter" type="number" min="1" value="1">
+          </label>
+          <label>
+            End chapter
+            <input id="endChapter" type="number" min="1" value="100">
+          </label>
+          <label>
+            Export format
+            <select id="combineFormat">
+              <option value="txt">TXT</option>
+              <option value="docx">DOCX</option>
+              <option value="pdf">PDF</option>
+            </select>
+          </label>
+          <button class="primary" type="submit">Combine and export</button>
+        </form>
+      </section>
+
+      <section id="ttsView" hidden>
+        <div class="tts-panel">
+
+          <!-- Voice selector + bulk download -->
+          <div class="tts-voice-row">
+            <label class="tts-label" style="flex:1; min-width:200px">
+              Active voice
+              <select id="ttsVoice"></select>
+            </label>
+            <button id="ttsDownloadAll" type="button" class="primary tts-bulk-btn">⬇ Download All English Voices</button>
+          </div>
+
+          <div class="tts-bulk-progress" id="ttsBulkProgress" hidden>
+            <div class="tts-bulk-bar">
+              <div class="tts-bulk-fill" id="ttsBulkFill"></div>
+            </div>
+            <span class="tts-bulk-text" id="ttsBulkText">0 / 37</span>
+          </div>
+
+          <!-- Voice catalog grid -->
+          <div class="tts-catalog-header">
+            <h3>Voice Catalog</h3>
+            <span class="tts-catalog-count" id="ttsCatalogCount"></span>
+          </div>
+          <div class="tts-catalog" id="ttsCatalog">
+            <div class="tts-catalog-loading">Loading voice catalog…</div>
+          </div>
+
+          <!-- Chapter text + controls -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: -10px;">
+            <label class="tts-label">Chapter text</label>
+            <label class="vc-btn" style="cursor: pointer; padding: 4px 10px; border: 1px solid var(--line); border-radius: 5px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; font-weight: normal; background: #fff; color: var(--ink);">
+                <input type="file" id="ttsFileUpload" accept=".txt,.docx,.pdf" style="display: none;">
+              📄 Upload TXT file
+            </label>
+          </div>
+          <label class="tts-label wide">
+            <textarea id="ttsText" rows="8" placeholder="Paste or scrape chapter text here…"></textarea>
+          </label>
+
+          <div id="chaptersControls" style="margin-top:10px; display:flex; gap:8px; align-items:center;">
+            <button id="chapterPrev" type="button">◀ Prev</button>
+            <button id="chapterNext" type="button">Next ▶</button>
+            <div id="chaptersList" style="flex:1; max-height:160px; overflow:auto; border:1px solid var(--line); padding:6px; border-radius:6px;"></div>
+          </div>
+
+          <div class="tts-controls">
+            <button id="ttsGenerate" type="button" class="primary tts-play-btn">▶ Generate &amp; Play</button>
+            <button id="ttsStop" type="button" disabled class="tts-stop-btn">⏹ Stop</button>
+            <button id="ttsDownloadAudio" type="button" disabled>💾 Save WAV</button>
+          </div>
+
+          <div class="tts-player" id="ttsPlayer" hidden>
+            <div class="tts-waveform">
+              <div class="tts-progress" id="ttsProgress"></div>
+            </div>
+            <div class="tts-time">
+              <span id="ttsCurrentTime">0:00</span>
+              <span id="ttsDuration">0:00</span>
+            </div>
+            <audio id="ttsAudio"></audio>
+          </div>
+
+          <!-- Hidden audio element for voice previews -->
+          <audio id="ttsPreviewAudio"></audio>
+
+          <div class="tts-status" id="ttsStatus">Select a voice and enter text to generate speech.</div>
+        </div>
+      </section>
+    </section>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
