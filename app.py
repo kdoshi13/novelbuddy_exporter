@@ -24,8 +24,15 @@ from zipfile import ZipFile
 from pathlib import Path as _Path
 
 # --------------- Piper TTS setup ---------------
-from piper import PiperVoice
-from piper.download_voices import download_voice
+# Try to import Piper; if not available (e.g., on serverless), disable TTS
+TTS_AVAILABLE = False
+try:
+    from piper import PiperVoice
+    from piper.download_voices import download_voice
+    TTS_AVAILABLE = True
+except ImportError:
+    PiperVoice = None
+    download_voice = None
 
 VOICES_DIR = Path(__file__).resolve().parent / "piper_voices"
 VOICES_DIR.mkdir(exist_ok=True)
@@ -231,12 +238,16 @@ def health():
 @app.get("/api/tts/voices")
 def api_tts_voices():
     """Return the list of downloaded voice models."""
+    if not TTS_AVAILABLE:
+        return jsonify({"error": "TTS not available in this deployment. Install piper-tts to enable."}), 503
     return jsonify({"voices": _list_downloaded_voices()})
 
 
 @app.post("/api/tts/download")
 def api_tts_download():
     """Download a new voice model by id (e.g. en_US-lessac-medium)."""
+    if not TTS_AVAILABLE:
+        return jsonify({"error": "TTS not available in this deployment."}), 503
     payload = request.get_json(silent=True) or {}
     voice_id = (payload.get("voice_id") or "").strip()
     if not voice_id:
@@ -255,6 +266,8 @@ def api_tts():
     Accepts JSON: { text, voice_id? }
     Returns: audio/wav binary.
     """
+    if not TTS_AVAILABLE:
+        return jsonify({"error": "TTS not available in this deployment."}), 503
     payload = request.get_json(silent=True) or {}
     text = (payload.get("text") or "").strip()
     voice_id = (payload.get("voice_id") or "").strip()
@@ -287,6 +300,8 @@ def api_tts():
 @app.get("/api/tts/catalog")
 def api_tts_catalog():
     """Return all available English voices with metadata."""
+    if not TTS_AVAILABLE:
+        return jsonify({"error": "TTS not available in this deployment."}), 503
     try:
         catalog = _fetch_catalog()
         en_voices = [
@@ -479,6 +494,8 @@ def api_tts_preview():
     Accepts JSON: { voice_id }
     Returns: audio/wav binary.
     """
+    if not TTS_AVAILABLE:
+        return jsonify({"error": "TTS not available in this deployment."}), 503
     payload = request.get_json(silent=True) or {}
     voice_id = (payload.get("voice_id") or "").strip()
     if not voice_id:
@@ -505,6 +522,8 @@ def api_tts_download_all():
     """
     Download all English voices. Returns a streaming JSON log.
     """
+    if not TTS_AVAILABLE:
+        return jsonify({"error": "TTS not available in this deployment."}), 503
     try:
         catalog = _fetch_catalog()
         en_ids = sorted(vid for vid in catalog if vid.startswith("en_"))
