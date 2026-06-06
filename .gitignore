@@ -1,11 +1,4 @@
 __pycache__/
-.venv/
-env/
-venv/
-*_chapters/
-*_index.csv
-*_resume.json
-chapters.csv
-chapters.json
-debug_ch1.json
 piper_voices/
+trash/
+tmp_uploads/
