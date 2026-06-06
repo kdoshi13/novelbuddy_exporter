@@ -2,3 +2,8 @@ __pycache__/
 piper_voices/
 trash/
 tmp_uploads/
+.git/
+.venv/
+.vercel/
+.vercel_build_output/
+*.log
