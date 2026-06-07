@@ -17,7 +17,7 @@ from xml.sax.saxutils import escape as xml_escape
 from urllib.request import urlopen, Request
 
 BASE_URL   = "https://novelbuddy.io"
-DELAY      = 0.100  # 100 milliseconds buffer time
+DELAY      = 0.0    # 0 milliseconds buffer time (no delay)
 MAX_ERRORS = 5
 CHAPTER_BATCH_SIZE = 100
 
