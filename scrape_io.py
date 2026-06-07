@@ -462,7 +462,7 @@ def run(novel_slug: str, novel_title: str, first_slug: str, start_save_chapter: 
             print(f"\n  Saved {CHAPTER_BATCH_SIZE} chapters in this batch.")
             print(f"  Next batch slug: {next_slug}")
             print(f"  Resume file    : {resume_path_for(novel_slug)}")
-            if not download_all and not ask_yes_no("  Download the next 100 chapters?", default=False):
+            if not download_all and not ask_yes_no("  Download the next 100 chapters?", default=True):
                 print("  Stopping at your request.")
                 break
             batch_count = 0
@@ -499,7 +499,7 @@ def main():
             if ask_yes_no("Use it to start immediately from the next batch?", default=True):
                 first_slug = resume["next_slug"]
                 start_save_chapter = 1
-                download_all = ask_yes_no("Download all remaining chapters without asking every 100?", default=False)
+                download_all = ask_yes_no("Download all remaining chapters without asking every 100?", default=True)
                 print()
                 run(novel_slug, novel_title or resume.get("novel_title", ""), first_slug, start_save_chapter, download_all)
                 return
@@ -509,7 +509,7 @@ def main():
             first_slug = "chapter-1"
         start_text = input("Start saving from chapter number (press Enter for 1): ").strip()
         start_save_chapter = int(start_text) if start_text.isdigit() else 1
-        download_all = ask_yes_no("Download all chapters without asking every 100?", default=False)
+        download_all = ask_yes_no("Download all chapters without asking every 100?", default=True)
         print()
         run(novel_slug, novel_title, first_slug, start_save_chapter, download_all)
 

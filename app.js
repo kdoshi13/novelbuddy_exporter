@@ -7,7 +7,7 @@ const state = {
   chapterCount: 10,
   chapters: [],
   running: false,
-  downloadAll: false,
+  downloadAll: true,
 };
 
 const $ = (id) => document.getElementById(id);
@@ -272,7 +272,7 @@ async function scrapeBatch(downloadAll = false) {
     showError(`Scraping failed: ${error.message}`);
   } finally {
     state.running = false;
-    state.downloadAll = false;
+    state.downloadAll = true;
     updateScrapeUi();
   }
 }
@@ -312,13 +312,13 @@ $("scrapeForm").addEventListener("submit", async (event) => {
 });
 
 $("startScrape").addEventListener("click", () => {
-  state.downloadAll = false;
+  state.downloadAll = true;
 });
 
-$("continueScrape").addEventListener("click", () => scrapeBatch(false));
+$("continueScrape").addEventListener("click", () => scrapeBatch(true));
 
 $("downloadAll").addEventListener("click", () => {
-  state.downloadAll = true;
+  state.downloadAll = false;
   $("scrapeForm").requestSubmit();
 });
 
