@@ -7,53 +7,84 @@
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
   <main class="shell">
     <section class="panel">
       <div class="mast">
         <div>
-          <p class="eyebrow">NovelBuddy tools</p>
-          <h1>Chapter exporter</h1>
+          <p class="eyebrow">🚀 NovelBuddy Tools</p>
+          <h1>Chapter Exporter</h1>
         </div>
-        <div class="status" id="status">Ready</div>
+        <div class="mast-actions">
+          <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark theme" title="Switch theme">
+            <span class="theme-toggle-icon" aria-hidden="true">D</span>
+            <span id="themeToggleText">Dark</span>
+          </button>
+          <div class="status" id="status">Ready</div>
+        </div>
       </div>
 
       <div class="tabs" role="tablist">
-        <button class="tab active" id="scrapeTab" type="button">Scrape</button>
-        <button class="tab" id="combineTab" type="button">Combine TXT</button>
+        <button class="tab active" id="scrapeTab" type="button">📥 Scrape Chapters</button>
+        <button class="tab" id="combineTab" type="button">📚 Combine TXT</button>
         <button class="tab" id="ttsTab" type="button">🔊 Read Aloud</button>
       </div>
 
       <section id="scrapeView">
         <form id="scrapeForm" class="grid">
           <label>
-            Novel slug
-            <input id="novelSlug" required placeholder="">
+            <div class="label-with-help">
+              Novel Slug
+              <span class="help-icon" title="The URL slug of the novel (e.g., 'under-the-oak-tree' from novelbuddy.io/under-the-oak-tree)">?</span>
+            </div>
+            <input id="novelSlug" required placeholder="e.g., under-the-oak-tree">
           </label>
           <label>
-            Book title
-            <input id="novelTitle" placeholder="">
+            <div class="label-with-help">
+              Book Title
+              <span class="help-icon" title="Optional: The full title for your exported file">?</span>
+            </div>
+            <input id="novelTitle" placeholder="e.g., Under the Oak Tree">
           </label>
           <label>
-            First chapter slug
-            <input id="firstSlug" value="chapter-1">
+            <div class="label-with-help">
+              First Chapter Slug
+              <span class="help-icon" title="The slug of the starting chapter (e.g., 'chapter-1' or 'prologue')">?</span>
+            </div>
+            <input id="firstSlug" value="chapter-1" placeholder="chapter-1">
           </label>
           <label>
-            Start saving from chapter
+            <div class="label-with-help">
+              Number of Chapters
+              <span class="help-icon" title="How many chapters to scrape in each batch">?</span>
+            </div>
+            <input id="chapterCount" type="number" min="1" value="10">
+          </label>
+          <label>
+            <div class="label-with-help">
+              Start Saving From Chapter
+              <span class="help-icon" title="Only save chapters from this number onwards (e.g., enter 5 to skip first 4)">?</span>
+            </div>
             <input id="startSaveChapter" type="number" min="1" value="1">
           </label>
           <label>
-            Export format
+            <div class="label-with-help">
+              Export Format
+              <span class="help-icon" title="Choose output format: TXT, DOCX, or PDF">?</span>
+            </div>
             <select id="scrapeFormat">
-              <option value="txt">TXT</option>
-              <option value="docx">DOCX</option>
-              <option value="pdf">PDF</option>
+              <option value="txt">📄 TXT (Plain Text)</option>
+              <option value="docx">📝 DOCX (Microsoft Word)</option>
+              <option value="pdf">📕 PDF (Adobe)</option>
             </select>
           </label>
-          <button class="primary" id="startScrape" type="submit">Start 100-chapter batch</button>
-          <button id="downloadAll" type="button">Download all chapters</button>
-          <button id="useResume" type="button" disabled>Use saved next batch</button>
-          <button id="continueScrape" type="button" disabled>Download next 100</button>
-          <button id="exportScrape" type="button" disabled>Export collected chapters</button>
+          <button class="primary" id="startScrape" type="submit">▶ Start Scraping</button>
+          <button id="downloadAll" type="button">⬇ Download All Chapters</button>
+          <button id="useResume" type="button" disabled>⏮ Use Saved Checkpoint</button>
+          <button id="continueScrape" type="button" disabled>▶ Continue Scraping</button>
+          <button id="exportScrape" type="button" disabled>💾 Export Collected Chapters</button>
         </form>
 
         <div class="meter">
@@ -67,30 +98,30 @@
       <section id="combineView" hidden>
         <form id="combineForm" class="grid">
           <label class="wide">
-            Chapter TXT files
+            Chapter TXT Files
             <input id="txtFiles" type="file" accept=".txt" multiple>
           </label>
           <label>
-            Book title
+            Book Title
             <input id="combineTitle" placeholder="Optional">
           </label>
           <label>
-            Start chapter
+            Start Chapter
             <input id="startChapter" type="number" min="1" value="1">
           </label>
           <label>
-            End chapter
+            End Chapter
             <input id="endChapter" type="number" min="1" value="100">
           </label>
           <label>
-            Export format
+            Export Format
             <select id="combineFormat">
-              <option value="txt">TXT</option>
-              <option value="docx">DOCX</option>
-              <option value="pdf">PDF</option>
+              <option value="txt">📄 TXT (Plain Text)</option>
+              <option value="docx">📝 DOCX (Microsoft Word)</option>
+              <option value="pdf">📕 PDF (Adobe)</option>
             </select>
           </label>
-          <button class="primary" type="submit">Combine and export</button>
+          <button class="primary" type="submit">✨ Combine & Export</button>
         </form>
       </section>
 
@@ -125,7 +156,7 @@
           <!-- Chapter text + controls -->
           <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: -10px;">
             <label class="tts-label">Chapter text</label>
-            <label class="vc-btn" style="cursor: pointer; padding: 4px 10px; border: 1px solid var(--line); border-radius: 5px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; font-weight: normal; background: #fff; color: var(--ink);">
+            <label class="vc-btn" style="cursor: pointer; padding: 4px 10px; border: 1px solid var(--line); border-radius: 5px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; font-weight: normal; background: var(--button-bg); color: var(--ink);">
                 <input type="file" id="ttsFileUpload" accept=".txt,.docx,.pdf" style="display: none;">
               📄 Upload TXT file
             </label>
@@ -134,14 +165,27 @@
             <textarea id="ttsText" rows="8" placeholder="Paste or scrape chapter text here…"></textarea>
           </label>
 
-          <div id="chaptersControls" style="margin-top:10px; display:flex; gap:8px; align-items:center;">
-            <button id="chapterPrev" type="button">◀ Prev</button>
-            <button id="chapterNext" type="button">Next ▶</button>
-            <div id="chaptersList" style="flex:1; max-height:160px; overflow:auto; border:1px solid var(--line); padding:6px; border-radius:6px;"></div>
+          <div class="chapter-tools" id="chaptersControls">
+            <div class="chapter-toolbar">
+              <button id="chapterPrev" type="button">◀ Prev</button>
+              <button id="chapterNext" type="button">Next ▶</button>
+              <input id="chapterSearch" type="search" placeholder="Search chapters">
+              <input id="chapterJump" type="number" min="1" placeholder="Go to">
+              <button id="chapterGo" type="button">Go</button>
+              <label class="tts-inline-check">
+                <input id="ttsAutoAdvance" type="checkbox" checked>
+                Auto next
+              </label>
+            </div>
+            <div class="chapter-summary" id="chapterSummary">Upload a book to browse chapters.</div>
+            <div class="chapters-list" id="chaptersList"></div>
+            <button id="chapterLoadMore" type="button" hidden>Show more chapters</button>
           </div>
 
           <div class="tts-controls">
-            <button id="ttsGenerate" type="button" class="primary tts-play-btn">▶ Generate &amp; Play</button>
+            <button id="ttsGenerate" type="button" class="primary tts-play-btn">▶ Play Current</button>
+            <button id="ttsPlayFromHere" type="button">▶ Play From Here</button>
+            <button id="ttsPause" type="button" disabled>⏸ Pause</button>
             <button id="ttsStop" type="button" disabled class="tts-stop-btn">⏹ Stop</button>
             <button id="ttsDownloadAudio" type="button" disabled>💾 Save WAV</button>
           </div>

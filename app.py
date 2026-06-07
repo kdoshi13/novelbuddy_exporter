@@ -7,6 +7,7 @@ import threading
 from io import BytesIO
 from pathlib import Path
 from urllib.request import urlopen
+from uuid import uuid4
 
 from flask import Flask, jsonify, request, send_file, send_from_directory
 
@@ -321,13 +322,15 @@ UPLOAD_DIR.mkdir(exist_ok=True)
 
 def _save_upload(filestorage):
     name = re.sub(r'[^0-9A-Za-z._-]', '_', filestorage.filename or "upload")
-    target = UPLOAD_DIR / name
+    stem = Path(name).stem[:80] or "upload"
+    suffix = Path(name).suffix
+    target = UPLOAD_DIR / f"{stem}_{uuid4().hex[:8]}{suffix}"
     filestorage.save(str(target))
     return target
 
 
 def _parse_txt(path: _Path):
-    text = path.read_text(encoding='utf-8', errors='ignore')
+    text = path.read_text(encoding='utf-8', errors='ignore').lstrip('\ufeff')
     # Split on lines that look like chapter headings
     parts = re.split(r'(?m)^(?:CHAPTER[:\s]|Chapter\s+\d+|CHAPTER\s+\d+).*$', text)
     # Fallback: if split produced one part, then try CHAPTER: markers
@@ -542,3 +545,7 @@ def api_tts_download_all():
             results.append({"voice_id": vid, "status": "error", "error": str(exc)})
 
     return jsonify({"results": results, "total": len(en_ids)})
+
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)

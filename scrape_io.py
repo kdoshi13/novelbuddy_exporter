@@ -159,12 +159,6 @@ def combine_chapter_text(chapter_files: list[tuple[int, str]], title: str = "") 
         chunks.append("=" * min(max(len(title.strip()), 12), 70))
 
     for _, path in chapter_files:
-        name = os.path.basename(path)
-        # derive a readable chapter title from the filename (strip leading numbers)
-        base = os.path.splitext(name)[0]
-        chap_title = re.sub(r'^\d+_', '', base).replace('_', ' ').strip()
-        if chap_title:
-            chunks.append(f"CHAPTER: {chap_title}")
         with open(path, "r", encoding="utf-8") as f:
             body = f.read().strip()
         chunks.append(body)
